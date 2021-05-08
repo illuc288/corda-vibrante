@@ -37,6 +37,7 @@ void plot( EquazioneDifferenzialeBase * rk, FunzioneVettorialeBase * oa, const d
 
 int main(int argc, const char *argv[]) { 
 
+  // dati della corda del mio gruppo, alpha solo indicativa
   double alpha = 3.0;
   double l0 = 0.626;
   double lr = 0.587;
@@ -56,16 +57,15 @@ int main(int argc, const char *argv[]) {
   const double lastt = 10. /alpha;
   
   
-  double h = 0.001; //per oa funziona molto bene già con 0.1, per oasmorzato meglio 0.01
-  // per corda grafico viene meglio con 0.001 ma sembra funzionare anche con 0.01
+  double h = 0.001;  // passo di integrazione
   
-  //omega della forzante
+  // omega della forzante
   vector<double> omega;
   
-  //ampiezza oscillazione stabile
+  // ampiezza oscillazione stabile
   vector<double> A;
  
-  //salvo i valori trovati
+  // salvo i valori trovati
   ofstream out("corda_ampiezza.txt");
   
   cout << "Calcolo ampiezza oscillazione stabile al variare della pulsazione omega della forzante" << endl;
@@ -74,32 +74,22 @@ int main(int argc, const char *argv[]) {
   double larghezza_curva = 2 ;
   double passo = 0.01;
   int it=0;
-  double omega_p = omega_0;
+  double omega_p = omega_0;  // pulsazione sarà ricalcolata nel ciclo, poiché dipende dall'ampiezza
+
   //for(double om = omega_0-larghezza_curva; om <= omega_0+larghezza_curva*4; om += passo, it++ ){ // da sinistra
   for(double om = omega_0+larghezza_curva*4; om >= omega_0-larghezza_curva; om -= passo, it++ ){   // da destra 
-    
-    // sembra che sia solo da cambiare la omega, in modo che sia dipendente dal'ampiezza
     
     corda_forzante oa{omega_p, alpha, om, 10.};
     vector<double> pos{0., 0.};
     double A_temp;
     
-    vector<double> allpos;
-    vector<double> allt;
     for (double t{}; t <= lastt; t += h) {
       vector<double> last_pos = pos;
       pos = rk.Passo(t, pos, h, &oa);
       
-      allpos.push_back(pos[0]);
-      allt.push_back(t);
       // salvo l'ampiezza ogni volta che la velocità cambia segno
       if( sign (pos[1] ) * sign( last_pos[1]) < 0 ) A_temp = abs(pos[0]); 
     }
-    //Gnuplot plt{};
-    //plt.plot(allt, allpos);
-    //plt.show(); 
-    //getchar();
-    
 
     double l = sqrt(  pow( l0/2, 2)  +  A_temp*A_temp) * 2;
     double T = k*(l-lr);
@@ -107,26 +97,25 @@ int main(int argc, const char *argv[]) {
     v   =  sqrt(T/rho);
     double omega_old = omega_p;
     omega_p = 2*M_PI*v / lambda;
-    // double omega_1, omega_2;
-    // if(it==0)
-    //   omega_p = 2*M_PI*v / lambda;
-    // else if(it % 2 == 1)
-    //   omega_1 = 2*M_PI*v / lambda;
-    // else if(it % 2 == 0)
-    //   omega_2 = 2*M_PI*v / lambda;
-
+    
+    // alle prime iterazioni basta la formula sopra e si stabilizza da solo
+    // La riga sotto invece fa la media tra l'ampiezza calcolata in questo ciclo e il precedente.
+    // Senza quella l'ampiezza della lorentziana è molto instabile
     if(it>100 )
       omega_p = (omega_p + omega_old) /2.;
 
-    cout << "v e omega max aggiornati: " << v << "  " << omega_p << endl;
+    //cout << "v e omega max aggiornati: " << v << "  " << omega_p << endl;
 
-    //all'uscita dal ciclo avrò l'ampiezza dell'oscillazione stabile
+    //salvo l'ampiezza dell'oscillazione stabile per grafico Lorentziana
     A.push_back(A_temp);
     omega.push_back(om);
+
+    //salvo i dati nel file di output
     out << om << ", " << A_temp << endl;
     
-    if ( int(round(om * 100 )) % 10 == 0)  
-      cout << "Omega = " << om <<" su " << omega_p+larghezza_curva << endl;
+    //stampo il progresso attuale
+    if ( int(round(om * 100 )) % 100 == 0)  
+      cout << "Omega = " << om <<". Estremi: " << omega_0-larghezza_curva << " " << omega_0+larghezza_curva*4 << endl;
     
   }
   
@@ -136,17 +125,22 @@ int main(int argc, const char *argv[]) {
   // mostro il grafico
   Gnuplot plt{};
   plt.plot(omega, A);
-  plt.set_ylabel("Ampiezza[un. arb.]");
+  plt.set_ylabel("Ampiezza[m]");
   plt.set_xlabel("Pulsazione[rad/s]");
   plt.show(); 
   
+
+  cout << "Premere enter per salvare il grafico, altrimenti terminare il programma" << endl;
   getchar();
+
 
   // salvo il grafico
   Gnuplot output_plt{};
-  output_plt.redirect_to_png("OAforzante_ampiezza2.png");
+  output_plt.redirect_to_png("corda_ampiezza.png");
   output_plt.plot(omega, A);
-  output_plt.set_ylabel("Ampiezza[un. arb.]");
+  output_plt.set_ylabel("Ampiezza[m]");
   output_plt.set_xlabel("Pulsazione[rad/s]");
   output_plt.show();
+
+  cout << "Grafico salvato in corda_ampiezza.png" << endl;
 }

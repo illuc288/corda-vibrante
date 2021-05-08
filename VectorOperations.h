@@ -6,8 +6,7 @@
 #include <vector>
 
 //////////////////////////////////////////////////////////////
-// Nel namespace myVectAlgebra potremmo ridefinire gli operatori
-// matematici che coinvolgono vettori e scalari
+// Definizione operatori su vettori
 
 // somma di due vettori : somma componente per componente
 
