@@ -9,3 +9,5 @@ Partendo da destra si ottiene la seguente curva:
 
 Mentre da sinistra si ha:
 ![curva da sinistra](/risonanza_da_sinistra.png)
+
+Il programma fa uso di gnuplot e della libreria [gplot++](https://github.com/ziotom78/gplotpp) per fare grafici con c++.
