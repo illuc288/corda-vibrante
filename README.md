@@ -8,4 +8,4 @@ Partendo da destra si ottiene la seguente curva:
 ![curva da destra](/risonanza_da_destra.png)
 
 Mentre da sinistra si ha:
-[curva da sinistra](/risonanza_da_sinistra.png)
+![curva da sinistra](/risonanza_da_sinistra.png)
