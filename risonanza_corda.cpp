@@ -46,7 +46,8 @@ int main(int argc, const char *argv[]) {
   double T0 = k*(l0-lr);
   double rho= m/l0;
   double v  = sqrt(T0/rho);
-  double lambda = 2*l0;
+  int modo = 1;
+  double lambda = 2*l0 / modo;
   double omega_0= 2*M_PI*v / lambda; //omega propria iniziale
   
   cout << "v e omega max iniziali: " << v << "  " << omega_0 << endl;
@@ -76,8 +77,8 @@ int main(int argc, const char *argv[]) {
   int it=0;
   double omega_p = omega_0;  // pulsazione sarà ricalcolata nel ciclo, poiché dipende dall'ampiezza
 
-  //for(double om = omega_0-larghezza_curva; om <= omega_0+larghezza_curva*4; om += passo, it++ ){ // da sinistra
-  for(double om = omega_0+larghezza_curva*4; om >= omega_0-larghezza_curva; om -= passo, it++ ){   // da destra 
+  for(double om = omega_0-larghezza_curva; om <= omega_0+larghezza_curva*4; om += passo, it++ ){ // da sinistra
+  //for(double om = omega_0+larghezza_curva*4; om >= omega_0-larghezza_curva; om -= passo, it++ ){   // da destra 
     
     corda_forzante oa{omega_p, alpha, om, 10.};
     vector<double> pos{0., 0.};
