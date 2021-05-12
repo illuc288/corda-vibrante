@@ -7,6 +7,8 @@
 #include "gplot++.h"
 //preso da https://tinyurl.com/yyoeskq7
 
+enum modalita{destra, sinistra};
+
 using namespace std;
 
 int sign(double x){ return x == 0. ? 0 : (x > 0 ? 1 : -1) ;}
@@ -52,13 +54,24 @@ int main(int argc, const char *argv[]) {
   cout << "Calcolo ampiezza oscillazione stabile al variare della pulsazione omega della forzante" << endl;
   cout << "I dati sono salvati in " << filename << endl;
   
+  modalita mod = sinistra;
+  //modalita mod = destra;
+
   double larghezza_curva = 2 ;
+
   double passo = 0.01;
   int it=0;
   double omega_p = omega_0;  // pulsazione sarà ricalcolata nel ciclo, poiché dipende dall'ampiezza
+  double min = omega_0-larghezza_curva;
+  double max = omega_0+larghezza_curva*4;
+  double iniziale = min;
+  if(mod == destra){
+    iniziale = max;
+    passo = -passo;
+  }
 
-  //for(double om = omega_0-larghezza_curva; om <= omega_0+larghezza_curva*4; om += passo, it++ ){ // da sinistra
-  for(double om = omega_0+larghezza_curva*4; om >= omega_0-larghezza_curva; om -= passo, it++ ){   // da destra 
+  for(double om = iniziale; om >= min && om <= max; om += passo, it++ ){ // da sinistra
+  //for(double om = ; om >= omega_0-larghezza_curva; om -= passo, it++ ){   // da destra 
     
     corda_forzante oa{omega_p, alpha, om, 10.};
     vector<double> pos{0., 0.};
@@ -92,6 +105,7 @@ int main(int argc, const char *argv[]) {
     omega.push_back(om);
 
     //salvo i dati nel file di output
+    if(passo < 0 || it > 100)   //da destra, passo > 0, non salvo i primi dati perché molto variabili. Da sinistra, passo <0, no problem.
     out << om << ", " << A_temp << endl;
     
     //stampo il progresso attuale

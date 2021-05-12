@@ -15,4 +15,4 @@ risonanza_corda.o: risonanza_corda.cpp $(HEADS); g++ -c $<
 .SECONDARY:
 
 #-f serve così non mi avvisa ogni volta che non riesce ad eliminarli
-clean: ; rm -f *.o ${EXECS} gplot++.h
+clean: ; rm -f *.o ${EXECS} 
