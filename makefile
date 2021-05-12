@@ -1,4 +1,4 @@
-EXECS = risonanza_corda
+EXECS = risonanza_corda grafico
 HEADS = EquazioniDifferenziali.h VectorOperations.h FunzioniVettoriali.h
 
 all: gplot++.h $(EXECS); 
@@ -9,6 +9,7 @@ gplot++.h: ;
 
 risonanza_corda: risonanza_corda.o; g++ -o $@ $^
 risonanza_corda.o: risonanza_corda.cpp $(HEADS); g++ -c $<
+
 
 #serve per tenere i .o  
 .SECONDARY:

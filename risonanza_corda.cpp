@@ -11,30 +11,6 @@ using namespace std;
 
 int sign(double x){ return x == 0. ? 0 : (x > 0 ? 1 : -1) ;}
 
-void plot( EquazioneDifferenzialeBase * rk, FunzioneVettorialeBase * oa, const double lastt_graph){
-  
-  double h = 0.01; //per oa funziona stra bene già con 0.1, per oasmorzato meglio 0.01
-  vector<double> pos{0., 0.};
-  vector<double> x{pos[0]};
-  
-  vector<double> ts{0.};
-  for (double t{}; t <= lastt_graph; t += h) {
-    vector<double> last_pos = pos;
-    pos = rk -> Passo(t, pos, h, oa);
-    
-    ts.push_back(t);
-    x.push_back( pos[0] );
-
-  }
-
-  
-  Gnuplot plt{};
-  plt.plot(ts, x);
-  plt.set_ylabel("x[m]");
-  plt.set_xlabel("Tempo[s]");
-  plt.show(); 
-}
-
 int main(int argc, const char *argv[]) { 
 
   // dati della corda del mio gruppo, alpha solo indicativa
@@ -67,18 +43,22 @@ int main(int argc, const char *argv[]) {
   vector<double> A;
  
   // salvo i valori trovati
-  ofstream out("corda_ampiezza.txt");
+  cout << "Dove vuoi salvare i dati? (nome file senza estensione)" << endl;
+  string filename;
+  cin >> filename;
+  filename = filename + ".txt";
+  ofstream out(filename);
   
   cout << "Calcolo ampiezza oscillazione stabile al variare della pulsazione omega della forzante" << endl;
-  cout << "I dati sono salvati in corda_ampiezza.txt" << endl;
+  cout << "I dati sono salvati in " << filename << endl;
   
   double larghezza_curva = 2 ;
   double passo = 0.01;
   int it=0;
   double omega_p = omega_0;  // pulsazione sarà ricalcolata nel ciclo, poiché dipende dall'ampiezza
 
-  for(double om = omega_0-larghezza_curva; om <= omega_0+larghezza_curva*4; om += passo, it++ ){ // da sinistra
-  //for(double om = omega_0+larghezza_curva*4; om >= omega_0-larghezza_curva; om -= passo, it++ ){   // da destra 
+  //for(double om = omega_0-larghezza_curva; om <= omega_0+larghezza_curva*4; om += passo, it++ ){ // da sinistra
+  for(double om = omega_0+larghezza_curva*4; om >= omega_0-larghezza_curva; om -= passo, it++ ){   // da destra 
     
     corda_forzante oa{omega_p, alpha, om, 10.};
     vector<double> pos{0., 0.};
