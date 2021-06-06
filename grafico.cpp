@@ -12,46 +12,54 @@ using namespace std;
 
 int sign(double x){ return x == 0. ? 0 : (x > 0 ? 1 : -1) ;}
 
-int main(int argc, const char *argv[]) { 
+void getData(string filename, vector<double> &om, vector<double> &a){
 
-  vector<double> omega;
-  vector<double> A;
-
-  string filename = "dati_1_destra.txt";
   ifstream in(filename);
 
-  cout << "Prendo i dati da " << filename << endl;
+  if(in)
+    cout << "Prendo i dati da " << filename << endl;
+  else {
+    cerr << "Errore: impossibile leggere il file" << endl;
+    exit(1);
+  }
 
   while(in){
     string temp;
 
     getline(in, temp, ',');
     if(!in) break;
-    omega.push_back(stod(temp));
+    om.push_back(stod(temp));
 
     getline(in, temp, '\n');
-    A.push_back(stod(temp));
+    a.push_back(stod(temp));
+  }
 
-    
+}
+
+int main(int argc, const char *argv[]) { 
+
+  vector<double> omega;
+  vector<double> A;
+
+  int numfile;
+  cout << "Da quanti file vuoi prendere dati?" << endl;
+  cin >> numfile;
+
+  for(int n = 0 ; n < numfile; n++){
+    string filename;
+    cout << "Enter the name of file without extension "<< n+1<< endl; 
+    cin >> filename;
+    filename += ".txt";
+    getData(filename, omega, A);
   }
   
-  filename = "dati_1_sinistra.txt";
-  ifstream in2(filename);
-
-  cout << "Prendo i dati da " << filename << endl;
-
-  while(in2){
-    string temp;
-
-    getline(in2, temp, ',');
-    if(!in2) break;
-    omega.push_back(stod(temp));
-
-    getline(in2, temp, '\n');
-    A.push_back(stod(temp));
-
-    
-  }
+  // string filename = "dati_1_destra.txt";
+  // getData(filename, omega, A);
+  
+  // filename = "dati_1_sinistra.txt";
+  // getData(filename, omega, A);
+  
+  
 
   // mostro il grafico
   Gnuplot plt{};
